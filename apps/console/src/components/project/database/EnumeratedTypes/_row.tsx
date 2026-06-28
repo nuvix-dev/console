@@ -23,7 +23,7 @@ const EnumeratedTypeValueRow = ({
       {(draggableProvided: DraggableProvided) => (
         <div
           ref={draggableProvided.innerRef}
-          {...draggableProvided.draggableProps}
+          {...(draggableProvided.draggableProps as object)}
           className="flex items-center space-x-2 space-y-2"
         >
           <div

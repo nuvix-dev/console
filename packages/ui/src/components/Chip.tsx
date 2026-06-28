@@ -16,6 +16,7 @@ export interface ChipProps extends React.ComponentProps<typeof Flex> {
   iconButtonProps?: Partial<IconButtonProps>;
   style?: React.CSSProperties;
   className?: string;
+  disabled?: boolean;
 }
 
 const Chip: React.FC<ChipProps> = forwardRef<HTMLDivElement, ChipProps>(
@@ -79,8 +80,9 @@ const Chip: React.FC<ChipProps> = forwardRef<HTMLDivElement, ChipProps>(
         className={classNames(
           styles.chip,
           {
-            [styles.selected]: selected,
-            [styles.unselected]: !selected,
+            [styles.selected]: selected && !rest.disabled,
+            [styles.unselected]: !selected && !rest.disabled,
+            [styles.disabled]: rest.disabled,
           },
           "overflow-ellipsis ",
           className,

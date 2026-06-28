@@ -27,10 +27,10 @@ export const UpdateEvents = ({ webhook }: { webhook: Models.Webhook }) => {
 
   const refresh = async () => {
     await queryClient.invalidateQueries({
-      queryKey: rootKeys.keys(project?.$id!),
+      queryKey: rootKeys.webhooks(project?.$id!),
     });
     await queryClient.invalidateQueries({
-      queryKey: rootKeys.key(project?.$id!, webhook.$id),
+      queryKey: rootKeys.webhook(project?.$id!, webhook.$id),
     });
   };
 
@@ -44,11 +44,16 @@ export const UpdateEvents = ({ webhook }: { webhook: Models.Webhook }) => {
         validationSchema={schema}
         onSubmit={async (values) => {
           try {
-            await sdkForConsole.projects.updateKey(
+            await sdkForConsole.projects.updateWebhook(
               project?.$id!,
               webhook.$id,
               webhook.name,
               values.events,
+              webhook.url,
+              webhook.security,
+              webhook.enabled,
+              webhook.httpUser,
+              webhook.httpPass,
             );
             addToast({
               variant: "success",

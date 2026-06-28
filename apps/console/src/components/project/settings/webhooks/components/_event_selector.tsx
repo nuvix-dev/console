@@ -1,5 +1,14 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { Button, Dialog, Input, Row, Tag, Text } from "@nuvix/ui/components";
+import { Button, Chip, IconButton, Input, Row, Tag, Text } from "@nuvix/ui/components";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+  DialogClose,
+} from "@nuvix/sui/components/dialog";
 
 export type EventService = {
   name: string;
@@ -29,28 +38,14 @@ const eventServices: Array<EventService> = [
     actions: [{ name: "create" }, { name: "update" }, { name: "delete" }],
   },
   {
-    name: "databases",
+    name: "schemas",
     resources: [
       {
-        name: "tables",
+        name: "collections",
         actions: [{ name: "create" }, { name: "update" }, { name: "delete" }],
       },
       {
-        name: "rows",
-        actions: [{ name: "create" }, { name: "update" }, { name: "delete" }],
-      },
-    ],
-    actions: [{ name: "create" }, { name: "update" }, { name: "delete" }],
-  },
-  {
-    name: "functions",
-    resources: [
-      {
-        name: "deployments",
-        actions: [{ name: "create" }, { name: "update" }, { name: "delete" }],
-      },
-      {
-        name: "executions",
+        name: "documents",
         actions: [{ name: "create" }, { name: "update" }, { name: "delete" }],
       },
     ],
@@ -145,7 +140,7 @@ const singular = (value: string | undefined) => {
 
 interface EventSelectorProps {
   isOpen: boolean;
-  onClose: () => void;
+  onOpenChange: (o: boolean) => void;
   initialValue?: string;
   onCreated?: (eventValue: string) => void;
 }
@@ -157,7 +152,12 @@ type SelectedState = {
   column: string | null;
 };
 
-export function EventSelector({ isOpen, onClose, initialValue, onCreated }: EventSelectorProps) {
+export function EventSelector({
+  isOpen,
+  onOpenChange,
+  initialValue,
+  onCreated,
+}: EventSelectorProps) {
   const [selected, setSelected] = useState<SelectedState>({
     service: null,
     resource: null,
@@ -406,7 +406,7 @@ export function EventSelector({ isOpen, onClose, initialValue, onCreated }: Even
   const create = () => {
     if (!inputValue) return;
     onCreated?.(inputValue);
-    onClose();
+    onOpenChange(false);
   };
 
   const handleInputSelect = (event: React.SyntheticEvent<HTMLInputElement>) => {
@@ -419,138 +419,146 @@ export function EventSelector({ isOpen, onClose, initialValue, onCreated }: Even
   };
 
   return (
-    <Dialog
-      isOpen={isOpen}
-      onClose={onClose}
-      title={initialValue ? "Edit event" : "Create event"}
-      footer={
-        <Row horizontal="end" gap="4">
-          <Button variant="secondary" size="s" onClick={onClose}>
-            Cancel
-          </Button>
-          <Button disabled={showInput || !inputValue} size="s" onClick={create}>
-            {initialValue ? "Update" : "Create"}
-          </Button>
-        </Row>
-      }
-    >
-      <div className="flex flex-col gap-4">
-        <Text variant="body-default-s" onBackground="neutral-weak">
-          Select the events you want to subscribe to for this webhook.
-        </Text>
-
-        <div className="space-y-4">
-          <div className="space-y-2">
-            <Text variant="label-strong-s">Choose a service</Text>
-            <div className="flex flex-wrap gap-2">
-              {available.services.map((service) => (
-                <Tag
-                  key={service.name}
-                  variant={selected.service?.name === service.name ? "brand" : "neutral"}
-                  onClick={() => !showInput && select("service", service)}
-                >
-                  {service.name}
-                </Tag>
-              ))}
-            </div>
-          </div>
-
-          {available.resources.length > 0 && (
-            <div className="space-y-2">
-              <Text variant="label-strong-s">Choose a resource (optional)</Text>
+    <Dialog open={isOpen} onOpenChange={onOpenChange}>
+      <DialogContent>
+        <DialogClose />
+        <DialogHeader>
+          <DialogTitle>{initialValue ? "Edit event" : "Create event"}</DialogTitle>
+          <DialogDescription>
+            Select the events you want to subscribe to for this webhook.
+          </DialogDescription>
+        </DialogHeader>
+        <div className="flex flex-col gap-4">
+          <div className="space-y-4">
+            <div className="space-y-2 flex flex-col">
+              <Text variant="label-strong-s">Choose a service</Text>
               <div className="flex flex-wrap gap-2">
-                {available.resources.map((resource) => (
-                  <Tag
-                    key={resource.name}
-                    variant={selected.resource?.name === resource.name ? "brand" : "neutral"}
-                    onClick={() => !showInput && select("resource", resource)}
-                  >
-                    {resource.name}
-                  </Tag>
+                {available.services.map((service) => (
+                  <Chip
+                    key={service.name}
+                    label={service.name}
+                    selected={selected.service?.name === service.name}
+                    onClick={() => !showInput && select("service", service)}
+                    disabled={showInput}
+                  />
                 ))}
               </div>
             </div>
-          )}
 
-          {available.actions.length > 0 && (
-            <div className="space-y-2">
-              <Text variant="label-strong-s">Choose an action (optional)</Text>
-              <div className="flex flex-wrap gap-2">
-                {available.actions.map((action) => (
-                  <Tag
-                    key={action.name}
-                    variant={selected.action?.name === action.name ? "brand" : "neutral"}
-                    onClick={() => !showInput && select("action", action)}
-                  >
-                    {action.name}
-                  </Tag>
-                ))}
+            {available.resources.length > 0 && (
+              <div className="space-y-2 flex flex-col">
+                <Text variant="label-strong-s">Choose a resource (optional)</Text>
+                <div className="flex flex-wrap gap-2">
+                  {available.resources.map((resource) => (
+                    <Chip
+                      key={resource.name}
+                      label={resource.name}
+                      selected={selected.resource?.name === resource.name}
+                      onClick={() => !showInput && select("resource", resource)}
+                      disabled={showInput}
+                    />
+                  ))}
+                </div>
               </div>
-            </div>
-          )}
+            )}
 
-          {available.columns.length > 0 && (
-            <div className="space-y-2">
-              <Text variant="label-strong-s">Choose an attribute (optional)</Text>
-              <div className="flex flex-wrap gap-2">
-                {available.columns.map((column) => (
-                  <Tag
-                    key={column}
-                    variant={selected.column === column ? "brand" : "neutral"}
-                    onClick={() => !showInput && select("attribute", column)}
-                  >
-                    {column}
-                  </Tag>
-                ))}
+            {available.actions.length > 0 && (
+              <div className="space-y-2 flex flex-col">
+                <Text variant="label-strong-s">Choose an action (optional)</Text>
+                <div className="flex flex-wrap gap-2">
+                  {available.actions.map((action) => (
+                    <Chip
+                      key={action.name}
+                      label={action.name}
+                      selected={selected.action?.name === action.name}
+                      onClick={() => !showInput && select("action", action)}
+                      disabled={showInput}
+                    />
+                  ))}
+                </div>
               </div>
-            </div>
-          )}
+            )}
 
-          <div className="space-y-2">
-            <Text variant="label-strong-s">Event string</Text>
-            <Input
-              ref={inputRef}
-              value={showInput ? (customInput ?? "") : inputValue}
-              placeholder="Enter custom event"
-              readOnly={!showInput}
-              onChange={(event) => setCustomInput(event.target.value)}
-              onSelect={handleInputSelect}
-            >
-              <div className="flex gap-2">
-                {showInput ? (
-                  <>
-                    <Button size="s" variant="secondary" onClick={toggleShowInput}>
-                      Save
-                    </Button>
-                    <Button size="s" variant="tertiary" onClick={toggleShowInput}>
-                      Cancel
-                    </Button>
-                  </>
-                ) : (
-                  <>
-                    <Button size="s" variant="secondary" onClick={handleEdit}>
-                      Edit
-                    </Button>
-                    <Button
-                      size="s"
-                      variant="tertiary"
-                      onClick={() => navigator.clipboard.writeText(inputValue)}
-                      disabled={!inputValue}
+            {available.columns.length > 0 && (
+              <div className="space-y-2">
+                <Text variant="label-strong-s">Choose an attribute (optional)</Text>
+                <div className="flex flex-wrap gap-2">
+                  {available.columns.map((column) => (
+                    <Tag
+                      key={column}
+                      variant={selected.column === column ? "brand" : "neutral"}
+                      onClick={() => !showInput && select("attribute", column)}
                     >
-                      Copy
-                    </Button>
-                  </>
-                )}
+                      {column}
+                    </Tag>
+                  ))}
+                </div>
               </div>
-            </Input>
-            {showInput && helper ? (
-              <Text variant="body-default-s" onBackground="neutral-weak">
-                {helper}
-              </Text>
-            ) : null}
+            )}
+
+            <div className="space-y-2 flex flex-col">
+              <Text variant="label-strong-s">Event string</Text>
+              <Input
+                ref={inputRef}
+                value={showInput ? (customInput ?? "") : inputValue}
+                placeholder="Enter custom event"
+                labelAsPlaceholder
+                readOnly={!showInput}
+                onChange={(event) => setCustomInput(event.target.value)}
+                onSelect={handleInputSelect}
+                hasSuffix={
+                  <div className="flex gap-2">
+                    {showInput ? (
+                      <>
+                        <Button size="s" variant="secondary" onClick={toggleShowInput}>
+                          Save
+                        </Button>
+                        <Button size="s" variant="tertiary" onClick={toggleShowInput}>
+                          Cancel
+                        </Button>
+                      </>
+                    ) : (
+                      <>
+                        <IconButton
+                          size="m"
+                          variant="secondary"
+                          onClick={handleEdit}
+                          icon="edit"
+                          tooltip="Edit"
+                        />
+
+                        <IconButton
+                          size="m"
+                          icon="clipboard"
+                          variant="secondary"
+                          onClick={() => navigator.clipboard.writeText(inputValue)}
+                          disabled={!inputValue}
+                          tooltip="Copy"
+                        />
+                      </>
+                    )}
+                  </div>
+                }
+              />
+              {showInput && helper ? (
+                <Text variant="body-default-s" onBackground="neutral-weak">
+                  {helper}
+                </Text>
+              ) : null}
+            </div>
           </div>
         </div>
-      </div>
+        <DialogFooter>
+          <Row horizontal="end" gap="4">
+            <Button variant="secondary" size="s" onClick={() => onOpenChange(false)}>
+              Cancel
+            </Button>
+            <Button disabled={showInput || !inputValue} size="s" onClick={create}>
+              {initialValue ? "Update" : "Create"}
+            </Button>
+          </Row>
+        </DialogFooter>
+      </DialogContent>
     </Dialog>
   );
 }

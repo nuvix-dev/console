@@ -36,4 +36,9 @@
         background: var(--neutral-solid-weak);
         cursor: not-allowed;
     }
+
+    &.disabled {
+        background: var(--neutral-solid-weak);
+        cursor: not-allowed;
+    }
 }

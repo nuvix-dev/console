@@ -25,6 +25,7 @@ interface DialogProps extends Omit<React.ComponentProps<typeof Flex>, "title"> {
   stack?: boolean;
   onHeightChange?: (height: number) => void;
   minHeight?: number;
+  overlayClass?: string;
 }
 
 const DialogContext = React.createContext<{
@@ -65,6 +66,8 @@ const Dialog: React.FC<DialogProps> = forwardRef<HTMLDivElement, DialogProps>(
       footer,
       onHeightChange,
       minHeight,
+      className,
+      overlayClass,
       ...rest
     },
     ref,
@@ -217,9 +220,13 @@ const Dialog: React.FC<DialogProps> = forwardRef<HTMLDivElement, DialogProps>(
         left="0"
         right="0"
         bottom="0"
-        className={classNames(styles.overlay, {
-          [styles.open]: isAnimating,
-        })}
+        className={classNames(
+          styles.overlay,
+          {
+            [styles.open]: isAnimating,
+          },
+          overlayClass,
+        )}
         center
         padding="l"
         role="dialog"

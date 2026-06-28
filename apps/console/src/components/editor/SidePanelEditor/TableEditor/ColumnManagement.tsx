@@ -295,7 +295,7 @@ const ColumnManagement = ({
                         {(draggableProvided: DraggableProvided) => (
                           <div
                             ref={draggableProvided.innerRef}
-                            {...draggableProvided.draggableProps}
+                            {...(draggableProvided.draggableProps as object)}
                           >
                             <Column
                               column={column}
@@ -336,7 +336,10 @@ const ColumnManagement = ({
                   {otherColumns.map((column: ColumnField, index: number) => (
                     <Draggable key={column.id} draggableId={column.id} index={index}>
                       {(draggableProvided: DraggableProvided) => (
-                        <div ref={draggableProvided.innerRef} {...draggableProvided.draggableProps}>
+                        <div
+                          ref={draggableProvided.innerRef}
+                          {...(draggableProvided.draggableProps as object)}
+                        >
                           <Column
                             column={column}
                             relations={relations.filter((relation) => {
