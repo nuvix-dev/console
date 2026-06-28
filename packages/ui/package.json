@@ -27,7 +27,7 @@
     "@nuvix/sui": "workspace:*",
     "@nuvix/typescript-config": "workspace:*",
     "@tailwindcss/postcss": "^4.0.8",
-    "next": "16.1.6",
+    "next": "16.2.9",
     "@turbo/gen": "^2.4.2",
     "@types/node": "^20",
     "@types/prismjs": "^1.26.5",

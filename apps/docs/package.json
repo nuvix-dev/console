@@ -26,7 +26,7 @@
     "fumadocs-ui": "^16.6.2",
     "hast": "^1.0.0",
     "lucide-react": "^0.545.0",
-    "next": "16.1.6",
+    "next": "16.2.9",
     "react": "19.2.0",
     "react-dom": "19.2.0",
     "rehype-katex": "^7.0.1",

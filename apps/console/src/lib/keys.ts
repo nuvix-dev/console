@@ -20,6 +20,12 @@ export const rootKeys = {
   key(projectId: string, keyId: string) {
     return ["projects", projectId, "keys", keyId] as const;
   },
+  webhooks(projectId: string) {
+    return ["projects", projectId, "webhooks"] as const;
+  },
+  webhook(projectId: string, webhookId: string) {
+    return ["projects", projectId, "webhooks", webhookId] as const;
+  },
 
   organization(teamId?: string) {
     return ["organizations", teamId] as const;

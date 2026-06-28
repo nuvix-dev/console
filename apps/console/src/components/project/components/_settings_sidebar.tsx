@@ -19,11 +19,11 @@ const SettingsSidebar = () => {
             href: resolveHref("general"),
             isSelected: resolveIsSelected("general"),
           },
-          // {
-          //   label: "Webhooks",
-          //   href: resolveHref("webhooks"),
-          //   isSelected: resolveIsSelected("webhooks"),
-          // },
+          {
+            label: "Webhooks",
+            href: resolveHref("webhooks"),
+            isSelected: resolveIsSelected("webhooks"),
+          },
           {
             label: "Platforms",
             href: resolveHref("apps"),

@@ -29,6 +29,7 @@ const nextConfig = {
   experimental: {
     optimizePackageImports: ["@chakra-ui/react"],
   },
+  allowedDevOrigins: ["13.127.55.211"],
 };
 
 export default nextConfig;

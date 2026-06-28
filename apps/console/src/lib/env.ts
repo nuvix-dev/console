@@ -20,5 +20,5 @@ export function getEnv(): EnvConfig {
     };
   }
 
-  return (window as any).__NUVIX__ || {};
+  return (window as Window & typeof globalThis & { __NUVIX__: EnvConfig }).__NUVIX__ || {};
 }

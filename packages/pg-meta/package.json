@@ -5,7 +5,6 @@
   "main": "./src/index.ts",
   "repository": "nuvix-dev/nuvix",
   "scripts": {
-    "preinstall": "npx only-allow pnpm",
     "clean": "rimraf node_modules",
     "test": "run-s db:clean db:run test:run db:clean",
     "db:clean": "cd test/db && docker compose down",
