@@ -5,19 +5,20 @@
 # -----------------------
 FROM node:20-alpine AS base
 WORKDIR /app
-RUN corepack enable && corepack prepare pnpm@latest --activate
-ENV PNPM_HOME="/pnpm"
-ENV PATH="$PNPM_HOME:$PATH"
+
+# Install curl and certificates required by bun installer, then install bun
+RUN apk add --no-cache curl ca-certificates \
+ && curl -fsSL https://bun.sh/install | bash
+ENV BUN_INSTALL="/root/.bun"
+ENV PATH="$BUN_INSTALL/bin:$PATH"
 
 # -----------------------
 # Stage 1: Prune
 # -----------------------
 FROM base AS pruner
-# Install turbo globally for pruning
-RUN pnpm add -g turbo
+# Use bunx to run turbo for pruning (no global package manager install required)
 COPY . .
-# Prune the monorepo to only include the 'console' app and its dependencies
-RUN turbo prune console --out-dir=out --docker
+RUN bunx turbo prune console --out-dir=out --docker
 
 # -----------------------
 # Stage 2: Dependencies
@@ -29,11 +30,8 @@ WORKDIR /app
 # Copy full pruned workspace first
 COPY --from=pruner /app/out/full/ ./
 
-# Copy lockfile and workspace config
-COPY --from=pruner /app/out/pnpm-lock.yaml ./
-COPY --from=pruner /app/out/pnpm-workspace.yaml ./
-
-RUN pnpm install --frozen-lockfile
+# If a bun.lockb exists in the pruned output it will be used; otherwise bun will create one
+RUN bun install
 
 # -----------------------
 # Stage 3: Builder
@@ -47,7 +45,8 @@ ENV NEXT_PUBLIC_NUVIX_ENDPOINT=__NUVIX_DYNAMIC_NUVIX_ENDPOINT__
 ENV NEXT_PUBLIC_SERVER_ENDPOINT=__NUVIX_DYNAMIC_SERVER_ENDPOINT__
 ENV NEXT_TELEMETRY_DISABLED=1
 
-RUN pnpm turbo build --filter=console
+# Build only the console app using turbo via bunx
+RUN bunx turbo build --filter=console
 
 # -----------------------
 # Stage 4: Runtime
