@@ -6,11 +6,8 @@
 FROM node:20-alpine AS base
 WORKDIR /app
 
-# Install curl and certificates required by bun installer, then install bun
-RUN apk add --no-cache curl ca-certificates \
- && curl -fsSL https://bun.sh/install | sh
-ENV BUN_INSTALL="/root/.bun"
-ENV PATH="$BUN_INSTALL/bin:$PATH"
+# Install bun, curl and certificates via APK
+RUN apk add --no-cache bun curl ca-certificates
 
 # -----------------------
 # Stage 1: Prune
