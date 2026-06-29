@@ -90,15 +90,21 @@ export const UpdateSecurity = ({ webhook }: { webhook: Models.Webhook }) => {
                 name="httpUser"
                 placeholder="Enter HTTP User"
                 layout="vertical"
+                labelOptional="Optional"
               />
               <InputField
                 label={"HTTP Password"}
                 name="httpPass"
                 placeholder="Enter HTTP Password"
                 layout="vertical"
+                labelOptional="Optional"
               />
 
-              <InputSwitchField label={"Enable Security"} name="security" layout="vertical" />
+              <InputSwitchField
+                label={"Enable SSL/TLS Security"}
+                name="security"
+                layout="vertical"
+              />
             </CardBoxItem>
           </CardBoxBody>
         </CardBox>

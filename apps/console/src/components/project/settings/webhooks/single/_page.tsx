@@ -5,7 +5,14 @@ import { rootKeys } from "@/lib/keys";
 import { sdkForConsole } from "@/lib/sdk";
 import { useProjectStore } from "@/lib/store";
 import { useQuery } from "@tanstack/react-query";
-import { DeleteWebhook, UpdateName, UpdateEvents, UpdateStatus, UpdateUrl } from "./components";
+import {
+  DeleteWebhook,
+  UpdateName,
+  UpdateEvents,
+  UpdateStatus,
+  UpdateUrl,
+  SignatureKey,
+} from "./components";
 import { UpdateSecurity } from "./components/_update_security";
 
 export const WebhookPage = ({ webhookId }: { webhookId: string }) => {
@@ -29,6 +36,7 @@ export const WebhookPage = ({ webhookId }: { webhookId: string }) => {
         <>
           <UpdateStatus webhook={data} />
           <UpdateName webhook={data} />
+          <SignatureKey webhook={data} />
           <UpdateUrl webhook={data} />
           <UpdateEvents webhook={data} />
           <UpdateSecurity webhook={data} />
