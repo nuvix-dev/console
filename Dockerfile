@@ -3,11 +3,8 @@
 # -----------------------
 # Stage 0: Base
 # -----------------------
-FROM node:20-alpine AS base
+FROM oven/bun:latest AS base
 WORKDIR /app
-
-# Install bun, curl and certificates via APK
-RUN apk add --no-cache bun curl ca-certificates
 
 # -----------------------
 # Stage 1: Prune
@@ -21,7 +18,6 @@ RUN bunx turbo prune console --out-dir=out --docker
 # Stage 2: Dependencies
 # -----------------------
 FROM base AS deps
-RUN apk add --no-cache libc6-compat
 WORKDIR /app
 
 # Copy full pruned workspace first
